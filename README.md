@@ -28,6 +28,12 @@ Yes, SysRq A. The modified kernel has a new key assigned, which, as a joke, caus
 
 ## Ok, how do I install this then?
 
+### Notes before installing
+
+Please make sure your virtualization software or physical computer use an x86_64-compatible CPU. The installer, as well as OS use 64-bit binaries and kernel images. Also, make sure you use 64-bit UEFI (**not** IA32, **not** BIOS), as the image will be seen as unbootable otherwise.
+
+### The install process
+
 Use `grub-rescue` to build an ISO from the source, or use one of the releases I tagged (newest if possible).
 
 Then, insert the ISO image into your virtualization software's CD-ROM drive. You can burn the image onto a real CD but... why?
