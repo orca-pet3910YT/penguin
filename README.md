@@ -12,7 +12,7 @@ Maybe. As of now, the installer has only been tested on a VirtualBox machine, so
 
 No. There is no internet driver on this OS.
 
-## How do I make sure I can recover the installation after selecting the wrong drive?
+## How do I make sure I can recover the OS after selecting the wrong drive?
 
 Please **make a backup or installation media drive**. The OS is meant to be installed if you know what you're doing.
 
