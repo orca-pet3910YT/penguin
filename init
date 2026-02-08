@@ -1,0 +1,152 @@
+#!/bin/bash
+mount -t sysfs sys /sys
+mount -t devtmpfs dev /dev
+mount -t proc proc /proc
+echo s > /proc/sysrq-trigger
+#echo u > /proc/sysrq-trigger
+
+echo "Installer for Linux Penguin 1.0 by orca.pet3910YT"
+echo "Hello, user! Thank you for choosing Linux Penguin! I hope you will enjoy it!"
+echo "Please keep in mind this OS has no internet whatsoever and *WILL* wipe the drive you choose to install this on, EVEN IF THE INSTALL FAILS."
+echo "I am not responsible for damage caused in any experimental or essential machine, like home or business servers."
+echo "This OS is not meant for any serious work. Press any key to continue if you've read this and agree to risk irrecoverable OS installation."
+read -rsn 1
+
+while [[ ! -b "$DISK" ]]; do
+    disks="$(lsblk -dpno NAME,SIZE,MODEL,TYPE | grep disk)"
+    echo "$disks"
+    echo "Please read through the list above and type your disk of choice to install the OS on. For example if your disk is /dev/sda, type /dev/sda without a number or space after."
+    read -rp "Your disk: " DISK
+    if [[ ! -b "$DISK" ]] && echo "$disks" | grep -v "/"; then
+        echo "Invalid drive, try again."
+        sleep 2
+    fi
+done
+echo "The drive appears to be a correct block device. The following operation will install the experimental OS. If you don't want to install this OS, please press Ctrl-Alt-Del to restart this device and unplug the drive with this install media. Press any key if you want to continue."
+read -rsn 1
+/sbin/wipefs -a "$DISK"
+gdisk "$DISK" <<EOF
+o
+Y
+n
+1
+
++128M
+EF00
+n
+2
+
+
+
+w
+Y
+EOF
+# the heredoc above is to make a 128M ESP and fill the rest of the disk with the linux partition
+cd /penguin
+echo "Accessed ZIPs"
+echo "job: create filesystems"
+mkfs.fat -I -v -F32 -s 1 -S 512 "${DISK}1"
+mkfs.ext4 -F "${DISK}2"
+#read -rsn 1
+mount "${DISK}2" /mnt/OS
+os=/mnt/OS
+rm -rf /mnt/OS/*
+echo "job: copy boot files"
+echo "initramfs.cpio.gz"
+cp initramfs.cpio.gz "${os}/"
+echo "bzImage"
+cp /boot/bzImage "${os}/"
+#cp init "${os}/"
+echo "job: unzip files"
+echo "bin"
+unzip bin.zip -d "${os}/bin"
+echo "/lib64"
+mkdir "${os}/lib64"
+echo "elf_loader"
+unzip elf_loader.zip -d "${os}/lib64"
+#echo "/lib64"
+#mkdir "${os}/lib64"
+#mv "${os}/ld-linux-x86_64.so.2" "${os}/lib64"
+echo "/etc"
+mkdir "${os}/etc"
+echo "etc"
+unzip etc.zip -d "${os}/etc"
+echo "/lib/x86_64-linux-gnu/"
+mkdir -p "${os}/lib/x86_64-linux-gnu"
+echo "sbin"
+unzip sbin.zip -d "${os}/sbin"
+echo "libs"
+unzip libs.zip -d "${os}/lib/"
+mv "${os}/lib/*.*" "${os}/lib/x86_64-linux-gnu"
+echo "usr"
+unzip usr.zip -d "${os}"
+echo "/root"
+mkdir "${os}/root"
+echo "job: get UUID of both partitions"
+#lsblk -no KNAME,UUID
+#umount /mnt/ESP
+#umount /mnt/OS
+#mount -o ro "${DISK}1" /mnt/tmp
+#umount /mnt/tmp
+#mount -o ro "${DISK}2" /mnt/tmp
+#umount /mnt/tmp
+#mount "${DISK}1" /mnt/ESP
+#mount "${DISK}2" /mnt/OS
+umount /mnt/ESP
+umount /mnt/OS
+blockdev --rereadpt "${DISK}"
+mount "${DISK}1" /mnt/ESP
+mount "${DISK}2" /mnt/OS
+blkid -g
+for i in $(seq 1 15); do
+	espuuid=$(blkid -s UUID -o value "${DISK}1")
+	linuxuuid=$(blkid -s UUID -o value "${DISK}2")
+	echo "finding ${i}th time"
+	if [ -n "$espuuid" ] && [ -n "$linuxuuid" ]; then
+		echo "found it"
+		break
+	fi
+	sleep 1
+done
+echo "espuuid $espuuid"
+echo "linuxuuid $linuxuuid"
+echo "job: set up GRUB"
+#mkdir -p /mnt/ESP/EFI/Boot
+mount "${DISK}1" /mnt/ESP
+mkdir -p /mnt/ESP/EFI/Boot
+mkdir -p /mnt/ESP/EFI/GRUB
+unzip GRUB.zip -d /mnt/ESP/EFI/Boot
+# mv /mnt/ESP/EFI/bootx64.efi /mnt/ESP/EFI/Boot/bootx64.efi
+# mv can be a real annoying thing with this, so i'll try to figure something out
+# edit: figured it out
+echo -e "menuentry 'Linux Penguin 1.0' {\n\tsearch --no-floppy --fs-uuid --set=root ${linuxuuid}\n\tlinux /bzImage loglevel=6 root=UUID=${linuxuuid}\n\tinitrd /initramfs.cpio.gz\n\tboot\n}" > /mnt/ESP/EFI/GRUB/grub.cfg
+cp /mnt/ESP/EFI/GRUB/grub.cfg /mnt/ESP/EFI/Boot/grub.cfg
+echo "-- GRUB config BEGIN --"
+cat /mnt/ESP/EFI/GRUB/grub.cfg
+echo "--  GRUB config END  --"
+echo "job: prep the root user"
+cat > "${os}/root/.bashrc" <<'EOF'
+PS1='|\e[38;5;220mExit code: $? - \d at \@\e[0m\n*-[\e[38;5;9m\u@\h\e[38;5;220m:\e[38;5;82m\w\e[0m]\$ '
+export HOME=/root
+EOF
+echo "job: get root password"
+read -srp "Enter your root password here: " password
+secret=$(openssl passwd -6 -- "$password") # shh...
+# ABSOLUTELY **DO NOT** PRINT $secret OR $password!! IT IS A USER PASSWORD!!!
+echo -e "root:${secret}:0:0:root:/root:/bin/bash" > ${os}/etc/passwd
+echo "job: set up kernel partitions"
+echo "/proc"
+mkdir "${os}/proc"
+echo "/sys"
+mkdir "${os}/sys"
+echo "/dev"
+mkdir "${os}/dev"
+
+# TODO: ~~continue setting up here with unzipping~~ done
+if [[ ! $? = 0 ]]; then
+    echo "The OS could not be installed. Installation aborted. Press Ctrl-Alt-Del to restart."
+    sleep 9999d
+fi
+echo s > /proc/sysrq-trigger
+echo "The installation is finished. Press Ctrl-Alt-Del to reboot."
+sleep 9999d
