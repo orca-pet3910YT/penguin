@@ -38,7 +38,7 @@ Use `grub-rescue` to build an ISO from the source, or use one of the releases I 
 
 Then, insert the ISO image into your virtualization software's CD-ROM drive. You can burn the image onto a real CD but... why?
 
-You'll be prompted to read a warning. Press any key. Then type the /dev path to your block device, making sure it isn't a R/O disk/drive. Then press enter and again any key.
+You'll be prompted to read a warning. Press any key. Then type the /dev path to your hard disk, non-R/O optical media, tape drive, SD card (preferably not) or USB flash drive. Then press enter and again any key.
 
 The install will take about 15 seconds (suprising, isn't it?). Later you'll be prompted for your root password. Don't worry if you don't see anything while typing - that's normal and intended for security in case people are looking (you never know!)
 
