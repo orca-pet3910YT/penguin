@@ -2,7 +2,7 @@ Hello, user!
 
 This is **Linux Penguin 1.0**, a Linux-based OS by orca.pet3910YT!
 
-Please make sure the computer you install this on is NOT one that is essential for anything because it will have data wiped on the selected disk, so don't make any mistake when typing the drive!
+Please make sure the computer you install this on an essential machine because it will have data wiped on the selected disk, so don't make any mistake when typing the drive!
 
 ## Will this work on my machine?
 
