@@ -122,7 +122,7 @@ unzip GRUB.zip -d /mnt/ESP/EFI/Boot
 # mv /mnt/ESP/EFI/bootx64.efi /mnt/ESP/EFI/Boot/bootx64.efi
 # mv can be a real annoying thing with this, so i'll try to figure something out
 # edit: figured it out
-echo -e "menuentry 'Linux Penguin 1.0' {\n\tsearch --no-floppy --fs-uuid --set=root ${linuxuuid}\n\tlinux /bzImage loglevel=6 root=UUID=${linuxuuid}\n\tinitrd /initramfs.cpio.gz\n\tboot\n}" > /mnt/ESP/EFI/GRUB/grub.cfg
+echo -e "timeout=10\nmenuentry 'Linux Penguin 1.0' {\n\tsearch --no-floppy --fs-uuid --set=root ${linuxuuid}\n\tlinux /bzImage loglevel=6 root=UUID=${linuxuuid}\n\tinitrd /initramfs.cpio.gz\n\tboot\n}" > /mnt/ESP/EFI/GRUB/grub.cfg
 cp /mnt/ESP/EFI/GRUB/grub.cfg /mnt/ESP/EFI/Boot/grub.cfg
 echo "-- GRUB config BEGIN --"
 cat /mnt/ESP/EFI/GRUB/grub.cfg
@@ -131,6 +131,7 @@ echo "job: prep the root user"
 cat > "${os}/root/.bashrc" <<'EOF'
 PS1='|\e[38;5;220mExit code: $? - \d at \@\e[0m\n*-[\e[38;5;9m\u@\h\e[38;5;220m:\e[38;5;82m\w\e[0m]\$ '
 export HOME=/root
+export PATH=/bin:/usr/bin:/usr/sbin:/sbin
 EOF
 echo "job: get root password"
 read -srp "Enter your root password here: " password
@@ -145,6 +146,32 @@ echo "/sys"
 mkdir "${os}/sys"
 echo "/dev"
 mkdir "${os}/dev"
+echo "job: set up neofetch"
+mkdir "${os}/root/.config/neofetch" -p
+cat > ${os}/etc/neofetch/config.conf <<EOF
+print_info() {
+	info title
+	info underline
+	info "OS" distro
+	info "Host" model
+	info "Kernel" kernel
+	info "Uptime" uptime
+	info "Packages" packages
+	info "Shell" shell
+	info "Resolution" resolution
+	info "Terminal" term
+	info "Terminal Font" term_font
+	info "CPU" cpu
+	info "GPU" gpu
+	info "Memory" memory
+	info "Disk" disk
+	info "CPU Usage" cpu_usage
+	info cols
+}
+
+image_source="/usr/share/neofetch/ascii/penguin"
+EOF
+ln -s /etc/neofetch/config.conf ${os}/root/.config/neofetch/config.conf
 
 # TODO: ~~continue setting up here with unzipping~~ done
 if [[ ! $? = 0 ]]; then
