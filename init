@@ -17,9 +17,11 @@ while [[ ! -b "$DISK" ]]; do
     echo "$disks"
     echo "Please read through the list above and type your disk of choice to install the OS on. For example if your disk is /dev/sda, type /dev/sda without a number or space after."
     read -rp "Your disk: " DISK
-    if [[ ! -b "$DISK" ]] && echo "$disks" | grep -v "/"; then
+    if ! lsblk -dpno KNAME | grep -qw "$DISK"; then
         echo "Invalid drive, try again."
         sleep 2
+    else
+        break
     fi
 done
 echo "The drive appears to be a correct block device. The following operation will install the experimental OS. If you don't want to install this OS, please press Ctrl-Alt-Del to restart this device and unplug the drive with this install media. Press any key if you want to continue."
