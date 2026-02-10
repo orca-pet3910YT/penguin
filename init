@@ -25,6 +25,7 @@ done
 echo "The drive appears to be a correct block device. The following operation will install the experimental OS. If you don't want to install this OS, please press Ctrl-Alt-Del to restart this device and unplug the drive with this install media. Press any key if you want to continue."
 read -rsn 1
 /sbin/wipefs -a "$DISK"
+echo "gdisk $DISK"
 gdisk "$DISK" <<EOF
 o
 Y
@@ -133,6 +134,7 @@ echo "job: get root password"
 read -srp "Enter your root password here: " password
 secret=$(openssl passwd -6 -- "$password") # shh...
 # ABSOLUTELY **DO NOT** PRINT $secret OR $password!! IT IS A USER PASSWORD!!!
+echo
 echo -e "root:${secret}:0:0:root:/root:/bin/bash" > ${os}/etc/passwd
 echo "job: set up kernel partitions"
 echo "/proc"
