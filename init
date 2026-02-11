@@ -2,8 +2,9 @@
 mount -t sysfs sys /sys
 mount -t devtmpfs dev /dev
 mount -t proc proc /proc
-echo s > /proc/sysrq-trigger
+#echo s > /proc/sysrq-trigger
 #echo u > /proc/sysrq-trigger
+sync
 
 echo "Installer for Linux Penguin 1.0 by orca.pet3910YT"
 echo "Hello, user! Thank you for choosing Linux Penguin! I hope you will enjoy it!"
@@ -178,6 +179,8 @@ if [[ ! $? = 0 ]]; then
     echo "The OS could not be installed. Installation aborted. Press Ctrl-Alt-Del to restart."
     sleep 9999d
 fi
-echo s > /proc/sysrq-trigger
+#echo s > /proc/sysrq-trigger
+sync
+echo "sync complete"
 echo "The installation is finished. Press Ctrl-Alt-Del to reboot."
 sleep 9999d

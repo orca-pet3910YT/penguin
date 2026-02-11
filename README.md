@@ -44,4 +44,4 @@ You'll be prompted to read a warning. Press any key. Then type the /dev path to 
 
 The install will take about 15 seconds (surprising, isn't it?). Later you'll be prompted for your root password. Don't worry if you don't see anything while typing - that's normal and intended for security in case people are looking (you never know!)
 
-Then, before rebooting, make sure you see on the bottom of your screen "Emergency Sync complete". Then eject your CD and press Ctrl-Alt-Del to boot into your fresh install, making sure the boot order is set to your new Penguin OS drive first. Enjoy!
+Then, before rebooting, make sure you see on the bottom of your screen "sync complete". Then eject your CD and press Ctrl-Alt-Del to boot into your fresh install, making sure the boot order is set to your new Penguin OS drive first. Enjoy!
