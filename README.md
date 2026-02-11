@@ -1,3 +1,11 @@
+```
+Linux
+ __  __       _                    _
+|__||   |\  |/ \|  | * |\  |  /|  / \
+|   |-- | \ || _|  | | | \ |   | |   |
+|   |__ |  \|\_/|__| | |  \|   |* \_/
+```
+
 Hello, user!
 
 This is **Linux Penguin 1.0**, a Linux-based OS by orca.pet3910YT!
