@@ -8,6 +8,8 @@ Please make sure the computer you install this is **NOT** an essential machine b
 
 Maybe. As of now, the installer has only been tested on a VirtualBox machine, so I can't be sure it will always work on real hardware.
 
+However, the kernel both on the installer and installed OS has generic USB drivers, which should work with most keyboards and some mice.
+
 ## Can I access the internet?
 
 No. There is no internet driver on this OS, and I haven't published the kernel source yet.
