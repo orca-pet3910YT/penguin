@@ -134,6 +134,8 @@ PS1='|\e[38;5;220mExit code: $? - \d at \@\e[0m\n*-[\e[38;5;9m\u@\h\e[38;5;220m:
 export HOME=/root
 export PATH=/bin:/usr/bin:/usr/sbin:/sbin
 EOF
+echo "/mnt"
+mkdir "${os}/mnt"
 echo "job: get root password"
 read -srp "Enter your root password here: " password
 secret=$(openssl passwd -6 -- "$password") # shh...
